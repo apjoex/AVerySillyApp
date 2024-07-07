@@ -1,40 +1,35 @@
-package com.x.chill;
+package com.x.chill
 
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Typeface
+import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import android.view.WindowManager
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
-public class SplashScreen extends AppCompatActivity {
+@SuppressLint("CustomSplashScreen")
+class SplashScreen : AppCompatActivity() {
 
-    TextView name_tag;
+    private lateinit var nameLabel: TextView
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_splash_screen);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        setContentView(R.layout.activity_splash_screen)
         //Set light status bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorWhite));
-        }
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = resources.getColor(R.color.colorWhite, theme)
 
-        name_tag = (TextView)findViewById(R.id.name_tag);
-        name_tag.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/alexbrush.ttf"));
+        nameLabel = findViewById<View>(R.id.name_tag) as TextView
+        nameLabel.typeface = Typeface.createFromAsset(assets, "fonts/alexbrush.ttf")
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SplashScreen.this, Home.class));
-                finish();
-            }
-        }, 1250);
+        Handler().postDelayed({
+            startActivity(Intent(this, Home::class.java))
+            finish()
+        }, 1250)
     }
 
 }

@@ -1,228 +1,183 @@
-package com.x.chill;
+package com.x.chill
 
-import android.Manifest;
-import android.content.ActivityNotFoundException;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.os.Build;
-import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
+import android.net.Uri
+import android.os.Bundle
+import android.preference.PreferenceManager
+import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.airbnb.lottie.LottieAnimationView
+import com.x.chill.reusables.Utilities
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.x.chill.reusables.Utilities;
+class Home : AppCompatActivity() {
+    private var press = 0
+    private lateinit var context: Context
+    private lateinit var photoView: RelativeLayout
+    private lateinit var textLabel: TextView
 
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-
-public class Home extends AppCompatActivity {
-
-    static TextView view;
-    int press = 0;
-    static SharedPreferences preferences;
-    Context context;
-    static LottieAnimationView animationView;
-    RelativeLayout photo_view;
-    TextView tag;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        getSupportActionBar().setTitle("A silly title goes here 😉");
-        context = this;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_home)
+        supportActionBar?.title = "A silly title goes here 😉"
+        context = this
         //Set light status bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorWhite));
-        }
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        window.statusBarColor = resources.getColor(R.color.colorWhite)
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        animationView = (LottieAnimationView) findViewById(R.id.animation_view);
-        animationView.setAnimation("anim.json");
-        animationView.playAnimation();
-        animationView.loop(true);
+        animationView = findViewById<View>(R.id.animation_view) as LottieAnimationView
+        animationView.setAnimation("anim.json")
+        animationView.playAnimation()
+        animationView.loop(true)
 
-        view = (TextView)findViewById(R.id.text);
-        view.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/alexbrush.ttf"),Typeface.BOLD);
-        view.setShadowLayer(3, 4, 4, Color.argb(100,10, 10, 10));
+        view = findViewById<View>(R.id.text) as TextView
+        view.setTypeface(Typeface.createFromAsset(assets, "fonts/alexbrush.ttf"), Typeface.BOLD)
+        view.setShadowLayer(3f, 4f, 4f, Color.argb(100, 10, 10, 10))
 
-        photo_view = (RelativeLayout)findViewById(R.id.photo_view);
-        tag = (TextView)findViewById(R.id.tag);
+        photoView = findViewById<View>(R.id.photo_view) as RelativeLayout
+        textLabel = findViewById<View>(R.id.tag) as TextView
 
-        refresh();
+        refresh()
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(press >= 7){
-                    AlertDialog dialog = new AlertDialog.Builder(Home.this)
-                            .setTitle("Hey you, curious cat!")
-                            .setMessage("So you found out this hidden feature. \nAnyways, there isn't much here (I guess that\'s why it's hidden in the first place)\n\nYou can reach me via")
-                            .setPositiveButton("TWITTER", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/apjoex")));
-                                }
-                            })
-                            .setNegativeButton("INSTAGRAM", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Uri uri = Uri.parse("http://instagram.com/_u/apjoex");
-                                    Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
+        view.setOnClickListener {
+            if (press >= 7) {
+                val dialog = AlertDialog.Builder(this@Home)
+                        .setTitle("Hey you, curious cat!")
+                        .setMessage("So you found out this hidden feature. \nAnyways, there isn't much here (I guess that\'s why it's hidden in the first place)\n\nYou can reach me via")
+                        .setPositiveButton("TWITTER") { dialogInterface, i ->
+                            dialogInterface.dismiss()
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/apjoex")))
+                        }
+                        .setNegativeButton("INSTAGRAM") { dialogInterface, i ->
+                            val uri = Uri.parse("http://instagram.com/_u/apjoex")
+                            val likeIng = Intent(Intent.ACTION_VIEW, uri)
 
-                                    likeIng.setPackage("com.instagram.android");
+                            likeIng.`package` = "com.instagram.android"
 
-                                    try {
-                                        startActivity(likeIng);
-                                    } catch (ActivityNotFoundException e) {
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://instagram.com/apjoex")));
-                                    }
-                                }
-                            }).create();
-                    dialog.show();
-                    press = 0;
-                }else{
-                    press++;
-                }
+                            try {
+                                startActivity(likeIng)
+                            } catch (e: ActivityNotFoundException) {
+                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://instagram.com/apjoex")))
+                            }
+                        }.create()
+                dialog.show()
+                press = 0
+            } else {
+                press++
             }
-        });
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.home,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.action_settings:
-                SettingsSheet settingsSheet = new SettingsSheet();
-                settingsSheet.show(getSupportFragmentManager(), "bottom sheet");
-                break;
-            case R.id.action_create:
-                if (ContextCompat.checkSelfPermission(Home.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                   //Request permission
-                    ActivityCompat.requestPermissions(Home.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            0);
-                }else{
-                  savePicture();
-                }
-
-                break;
         }
-        return super.onOptionsItemSelected(item);
+
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.home, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        when (id) {
+            R.id.action_settings -> {
+                val settingsSheet = SettingsSheet()
+                settingsSheet.show(supportFragmentManager, "bottom sheet")
+            }
+//            R.id.action_create -> if (ContextCompat.checkSelfPermission(this@Home, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                //Request permission
+//                ActivityCompat.requestPermissions(this@Home,
+//                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                        0)
+//            } else {
+//                savePicture()
+//            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            0 -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                  savePicture();
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    savePicture()
                 } else {
-                    Toast.makeText(context,"Err.. You need to grant us those permissions tho",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Err.. You need to grant us those permissions tho", Toast.LENGTH_SHORT).show()
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
+        }// other 'case' lines to check for other
+        // permissions this app might request
     }
 
-    private void savePicture() {
-        tag.setVisibility(View.VISIBLE);
-        Bitmap bitmap = Utilities.getBitmapFromView(photo_view,photo_view.getMeasuredWidth(),photo_view.getMeasuredHeight());
+    private fun savePicture() {
+        textLabel.visibility = View.VISIBLE
+        val bitmap = Utilities.getBitmapFromView(photoView, photoView.measuredWidth, photoView.measuredHeight)
         try {
-            String path = Utilities.storeImage(context,bitmap);
-//            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+            val path = Utilities.storeImage(context, bitmap)
+            //            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
 
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-            values.put(MediaStore.MediaColumns.DATA, path);
+            val values = ContentValues()
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            values.put(MediaStore.MediaColumns.DATA, path)
 
-            context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
-         //   MediaStore.Images.Media.insertImage(getContentResolver(),bitmap,"Demoooooo","");
-            Toast.makeText(context, "Image saved successfully", Toast.LENGTH_SHORT).show();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            //   MediaStore.Images.Media.insertImage(getContentResolver(),bitmap,"Demoooooo","");
+            Toast.makeText(context, "Image saved successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: InstantiationException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
         }
-        tag.setVisibility(View.INVISIBLE);
-        photo_view.setGravity(RelativeLayout.CENTER_HORIZONTAL | RelativeLayout.CENTER_VERTICAL);
+
+        textLabel.visibility = View.INVISIBLE
+        photoView.gravity = RelativeLayout.CENTER_HORIZONTAL or RelativeLayout.CENTER_VERTICAL
     }
 
-    public static void refresh() {
-        String newText = preferences.getString("text","A very silly app");
-        view.setText(newText);
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        internal lateinit var view: TextView
+        internal lateinit var preferences: SharedPreferences
+        internal lateinit var animationView: LottieAnimationView
 
-        String color = preferences.getString("colour","blue");
-        switch (color){
-            case "red":
-                animationView.setAnimation("red_back.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
-            case "magenta":
-                animationView.setAnimation("magneta_back.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
-            case "green":
-                animationView.setAnimation("green_back.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
-            case "blue":
-                animationView.setAnimation("anim.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
-            case "brown":
-                animationView.setAnimation("brown_back.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
-            case "purple":
-                animationView.setAnimation("purple_back.json");
-                animationView.playAnimation();
-                animationView.loop(true);
-                break;
+        fun refresh() {
+            val newText = preferences.getString("text", "A very silly app")
+            view.text = newText
+
+            val color = preferences.getString("colour", "blue")
+            val animationJSON: String = when (color) {
+                "red" -> "red_back.json"
+                "magenta" -> "magneta_back.json"
+                "green" -> "green_back.json"
+                "blue" -> "anim.json"
+                "brown" -> "brown_back.json"
+                "purple" -> "purple_back.json"
+                else -> "anim.json"
+            }
+            animationView.setAnimation(animationJSON)
+            animationView.playAnimation()
+            animationView.loop(true)
         }
     }
 
