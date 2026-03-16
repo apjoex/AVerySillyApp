@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">A very silly app</string>
     <string name="akinde_peters">Akinde-peters</string>
+    <string name="set">Save</string>
+    <string name="customize">Customize</string>
+    <string name="enter_new_text">Enter new text</string>
 </resources>

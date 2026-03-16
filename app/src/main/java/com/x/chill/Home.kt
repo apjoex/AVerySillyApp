@@ -1,6 +1,5 @@
 package com.x.chill
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
@@ -22,13 +21,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.airbnb.lottie.LottieAnimationView
 import com.x.chill.reusables.Utilities
+import androidx.core.net.toUri
 
 class Home : AppCompatActivity() {
-    private var press = 0
+    private var pressCount = 0
     private lateinit var context: Context
     private lateinit var photoView: RelativeLayout
     private lateinit var textLabel: TextView
@@ -59,16 +57,16 @@ class Home : AppCompatActivity() {
         refresh()
 
         view.setOnClickListener {
-            if (press >= 7) {
+            if (pressCount >= 7) {
                 val dialog = AlertDialog.Builder(this@Home)
                         .setTitle("Hey you, curious cat!")
                         .setMessage("So you found out this hidden feature. \nAnyways, there isn't much here (I guess that\'s why it's hidden in the first place)\n\nYou can reach me via")
-                        .setPositiveButton("TWITTER") { dialogInterface, i ->
+                        .setPositiveButton("X") { dialogInterface, i ->
                             dialogInterface.dismiss()
-                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/apjoex")))
+                            startActivity(Intent(Intent.ACTION_VIEW, "https://x.com/apjoex".toUri()))
                         }
-                        .setNegativeButton("INSTAGRAM") { dialogInterface, i ->
-                            val uri = Uri.parse("http://instagram.com/_u/apjoex")
+                        .setNegativeButton("Instagram") { dialogInterface, i ->
+                            val uri = "http://instagram.com/apjoex".toUri()
                             val likeIng = Intent(Intent.ACTION_VIEW, uri)
 
                             likeIng.`package` = "com.instagram.android"
@@ -76,13 +74,13 @@ class Home : AppCompatActivity() {
                             try {
                                 startActivity(likeIng)
                             } catch (e: ActivityNotFoundException) {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://instagram.com/apjoex")))
+                                startActivity(Intent(Intent.ACTION_VIEW, "http://instagram.com/apjoex".toUri()))
                             }
                         }.create()
                 dialog.show()
-                press = 0
+                pressCount = 0
             } else {
-                press++
+                pressCount++
             }
         }
 

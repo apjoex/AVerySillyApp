@@ -13,8 +13,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.core.content.edit
 
 /**
  * Created by apjoe on 2/17/2017.
@@ -39,6 +41,10 @@ class SettingsSheet : BottomSheetDialogFragment() {
     private lateinit var text: EditText
     private lateinit var preferences: SharedPreferences
     private var color_set: Boolean? = false
+        set(value) {
+            field = value
+            validateFields()
+        }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -77,6 +83,14 @@ class SettingsSheet : BottomSheetDialogFragment() {
     }
 
     private fun clickEvents() {
+
+        text.doOnTextChanged { text, start, before, count ->
+            text?.isEmpty()?.let {
+                if (!it) {
+                    validateFields()
+                }
+            }
+        }
 
         //Select red
         red.setOnClickListener {
@@ -127,37 +141,25 @@ class SettingsSheet : BottomSheetDialogFragment() {
         }
 
         set_btn.setOnClickListener {
-            if (validateFields()) {
-                onDismiss(dialog)
-                Home.refresh()
+            preferences.edit {
+                putString("text", text.text.toString())
             }
+
+            onDismiss(dialog)
+            Home.refresh()
+            Toast.makeText(activity, "Settings saved", Toast.LENGTH_SHORT).show()
         }
 
     }
 
     private fun setColor(s: String) {
-        val editor = preferences.edit()
-        editor.putString("colour", s)
-        editor.apply()
+        preferences.edit {
+            putString("colour", s)
+        }
     }
 
-    private fun validateFields(): Boolean {
-
-        if (TextUtils.isEmpty(text.text.toString())) {
-            Toast.makeText(activity, "Errr... I think you forgot to enter a new text", Toast.LENGTH_SHORT).show()
-            return false
-        } else {
-            val editor = preferences.edit()
-            editor.putString("text", text.text.toString())
-            editor.apply()
-        }
-
-        if ((!color_set!!)) {
-            Toast.makeText(activity, "Errr... I think you forgot to choose a colour", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        return true
+    private fun validateFields() {
+        set_btn.isEnabled = (!TextUtils.isEmpty(text.text.toString()) && color_set == true)
     }
 
     private fun unCheckAll() {
@@ -177,4 +179,3 @@ class SettingsSheet : BottomSheetDialogFragment() {
     }
 
 }
-
